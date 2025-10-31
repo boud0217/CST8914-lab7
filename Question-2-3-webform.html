@@ -23,6 +23,10 @@
     
     fieldset ul {
       margin: 0;
+    }
+    /* Add visual style for invalid fields */
+    .invalid {
+      border: 2px solid red;
     }</style>
     </head>
     <body>
@@ -87,8 +91,8 @@
 
         if ((value = $.urlParam(input)) === null) {
           if ($('fieldset.errors').length === 0) {
-            // Add container for errors with role="alert"
-            $('form').prepend('<fieldset class="errors" role="alert"><legend>Errors</legend><ul></ul></fieldset>');
+            // Add container for errors with role="alert" and tabindex="-1" to make it focusable
+            $('form').prepend('<fieldset class="errors" role="alert" tabindex="-1"><legend>Errors</legend><ul></ul></fieldset>');
           }
 
           $referencedElement = null;
@@ -105,7 +109,8 @@
           }
 
           // Add href to field ID
-          $error = $('<a href="#' + $referencedElement.attr('id') + '">' + message + '</a>');
+          // link to field ID
+          $error = $('<a href="#' + $referencedElement.attr('id') + '" class="error">' + message + '</a>');
           $error.click(function (e) {
             $referencedElement.focus();
             return e.preventDefault();
@@ -113,6 +118,10 @@
 
           // Add aria-describedby to link error to field
           $elementToDescribe.attr('aria-describedby', input + '_description');
+          // Add style invalid
+          $referencedElement.addClass('invalid');
+
+          $errorContainer.append('<li>').find('li:last').append($error);
 
           $errorContainer.append('<li>').find('li:last').append($error);
 
@@ -138,6 +147,9 @@
 
           if ($('.error').length === 0) {
             return alert('All inputs are valid.');
+          }else {
+            // Add focus on the error container
+            $('fieldset.errors').focus();
           }
         }
       });
